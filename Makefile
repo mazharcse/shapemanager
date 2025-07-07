@@ -1,15 +1,25 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -g
+CXXFLAGS = -std=c++17 -Wall -Wextra -g -Iinclude
 
-OBJS = main.o shape.o circle.o rectangle.o
+SRCDIR = src
+INCDIR = include
+BUILDDIR = build
+TARGET = $(BUILDDIR)/shapemanager
 
-shapemanager: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o shapemanager $(OBJS)
+SOURCES = main.cpp $(SRCDIR)/shape.cpp $(SRCDIR)/circle.cpp $(SRCDIR)/rectangle.cpp
+OBJECTS = $(patsubst %.cpp,$(BUILDDIR)/%.o,$(notdir $(SOURCES)))
 
-main.o: main.cpp shape.h circle.h rectangle.h
-shape.o: shape.cpp shape.h
-circle.o: circle.cpp circle.h shape.h
-rectangle.o: rectangle.cpp rectangle.h shape.h
+$(BUILDDIR)/%.o: %.cpp $(INCDIR)/shape.h $(INCDIR)/circle.h $(INCDIR)/rectangle.h | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.h | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(TARGET): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
 
 clean:
-	rm -f *.o shapemanager
+	rm -rf $(BUILDDIR)/*.o $(TARGET)
