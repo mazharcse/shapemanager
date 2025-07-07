@@ -22,16 +22,9 @@ int main() {
         showMenu();
         std::cin >> choice;
         if (choice == 0) break;
-        if (choice == 1) {
-            double r;
-            std::cout << "Enter radius: ";
-            std::cin >> r;
-            shapes.push_back(std::make_unique<Circle>(r));
-        } else if (choice == 2) {
-            double w, h;
-            std::cout << "Enter width and height: ";
-            std::cin >> w >> h;
-            shapes.push_back(std::make_unique<Rectangle>(w, h));
+        if (choice == 1 || choice == 2) {
+            auto shape = Shape::create(choice);
+            if (shape) shapes.push_back(std::move(shape));
         } else if (choice == 3) {
             int idx;
             std::cout << "Enter shape index to delete (starting from 0): ";
